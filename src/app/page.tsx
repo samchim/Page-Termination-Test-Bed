@@ -16,8 +16,6 @@ export default function Home() {
             });
             const responseJSON = await response.json();
 
-            console.log(`🤖 responseJOSN: `, responseJSON);
-
             setSessionId(responseJSON.sessionId);
         };
 
@@ -27,27 +25,55 @@ export default function Home() {
     useEffect(() => {
         const visibilityChangeCallback = async () => {
             if (document.hidden) {
-                const url = `api/session_delete/${sessionId}`;
-                console.log(`🤖 url: `, url);
-                await fetch(url, { method: "DELETE" });
+                const deleteUrl = `api/session_delete/${sessionId}`;
+                console.log(`🤖 fetch: `, deleteUrl);
+                await fetch(deleteUrl, { method: "DELETE" });
+
+                // const postUrl = `api/session_pause/${sessionId}`;
+                // console.log(`🤖 navigator.sendBeacon: `, postUrl);
+                // await navigator.sendBeacon(postUrl);
             } else {
                 console.log(`🤖 welcome back`);
             }
         };
-
         document.addEventListener("visibilitychange", visibilityChangeCallback);
+
+        const blurCallback = async () => {
+            const blurUrl = `api/session_blur/${sessionId}`;
+            // await fetch(blurUrl, { method: "POST" });
+            await navigator.sendBeacon(blurUrl);
+        };
+        window.addEventListener("blur", blurCallback);
+
+        const freezeCallback = async () => {
+            const freezeUrl = `api/session_freeze/${sessionId}`;
+            // await fetch(freezeUrl, { method: "POST" });
+            await navigator.sendBeacon(freezeUrl);
+        };
+        window.addEventListener("freeze", blurCallback);
+
+        const unloadCallback = async () => {
+            const unloadUrl = `api/session_unload/${sessionId}`;
+            // await fetch(unloadUrl, { method: "POST" });
+            await navigator.sendBeacon(unloadUrl);
+        };
+        window.addEventListener("unload", blurCallback);
 
         return () => {
             document.removeEventListener(
                 "visibilitychange",
                 visibilityChangeCallback,
             );
+            window.removeEventListener("blur", blurCallback);
+            window.removeEventListener("freeze", blurCallback);
+            window.removeEventListener("unload", blurCallback);
         };
     }, [sessionId]);
 
     return (
         <main className={styles.main}>
             <div className={styles.description}>
+                {sessionId}
                 <p>
                     Get started by editing&nbsp;
                     <code className={styles.code}>src/app/page.tsx</code>
