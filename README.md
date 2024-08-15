@@ -14,23 +14,28 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3001](http://localhost:3001) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
-## Learn More
+## Experiment Result
 
-To learn more about Next.js, take a look at the following resources:
+-   record the API call received by BE
+-   order of event no stable
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+| Browser                      | Mac OS Chrome                                                            | Mac OS Firefox                       | Mac OS Safari                            | Andriod Chrome                                                                     |
+| ---------------------------- | ------------------------------------------------------------------------ | ------------------------------------ | ---------------------------------------- | ---------------------------------------------------------------------------------- |
+| Switch Focus                 | "blur"                                                                   | "blur"                               | "blur"                                   | no event                                                                           |
+| Switch App                   | N/A                                                                      | N/A                                  | N/A                                      | "blur"<br>--switch back--<br>"visibilitychange"                                    |
+| Lock screen                  | "blur"<br>"visibilitychange"                                             | "visibilitychange"<br>"blur"         | "visibilitychange"<br>"blur"             | -- event detected but not sent ---<br>"visibilitychange"<br>"blur"                 |
+| Switch Tab                   | "visibilitychange"<br>"blur"                                             | "blur"<br>"visibilitychange"         | "blur"<br>"visibilitychange"             | "visibilitychange"<br>"blur"                                                       |
+| Redirect to other site       | "beforeunload"<br>"pagehide"<br>"unload"                                 | "blur"<br>"beforeunload"<br>"unload" | "pagehide"                               | "beforeunload"<br>"pagehide"<br>"unload"                                           |
+| Redirect to same site        | no event                                                                 | no event                             | no event                                 | no event                                                                           |
+| Fold / Unflod screen         | N/A                                                                      | N/A                                  | N/A                                      | "blur"<br>"visibilitychange"                                                       |
+| Close Tab (while Acative)    | "visibilitychange"<br>"pagehide"<br>"beforeunload"<br>"unload"<br>"blur" | "beforeunload"<br>"blur"<br>"unload" | "beforeunload"<br>"pagehide"<br>"unload" | "visibilitychange"<br>"blur"                                                       |
+| Close Tab (while Hidden)     | "beforeunload"<br>"pagehide"<br>"unload"                                 | "beforeunload"<br>"unload"           | "beforeunload"<br>"pagehide"<br>"unload" | no event                                                                           |
+| Close Window (while Acative) | "visibilitychange"<br>"beforeunload"<br>"pagehide"<br>"unload"<br>"blur" | "beforeunload"<br>"blur"<br>"unload" | "beforeunload"<br>"pagehide"<br>"unload" | -- close the only tab --<br>"visibilitychange"<br>"blur"<br>"pagehide"<br>"unload" |
+| Quit App (while Acative)     | "visibilitychange"<br>"beforeunload"<br>"pagehide"<br>"unload"           | "beforeunload"                       | "beforeunload"                           | no event                                                                           |
+| Discard (mannually)          | no event                                                                 | N/A                                  | N/A                                      | N/A                                                                                |
