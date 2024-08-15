@@ -5,7 +5,7 @@ export async function POST(
     context: { params: { sessionId: string } },
 ): Promise<NextResponse> {
     console.log(
-        `🤖 received POST /api/session_delete/${context.params.sessionId} from fetch during visibilitychange event`,
+        `🤖 received POST /api/session_beforeunload/${context.params.sessionId} from sendBeacon during beforeunload event`,
     );
 
     return NextResponse.json({}, { status: 200 });

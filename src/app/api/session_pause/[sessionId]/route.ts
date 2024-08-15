@@ -5,7 +5,7 @@ export async function POST(
     context: { params: { sessionId: string } },
 ): Promise<NextResponse> {
     console.log(
-        `🤖 received POST /api/session_pause/${context.params.sessionId} from sendBeacon`,
+        `🤖 received POST /api/session_pause/${context.params.sessionId} from sendBeacon during visibilitychange event`,
     );
 
     return NextResponse.json({}, { status: 200 });

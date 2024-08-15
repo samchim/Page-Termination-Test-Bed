@@ -4,6 +4,7 @@ import Image from "next/image";
 import styles from "./page.module.css";
 import { useCallback, useEffect, useState } from "react";
 import { METHODS } from "http";
+import Link from "next/link";
 
 export default function Home() {
     const [sessionId, setSessionId] = useState("");
@@ -26,12 +27,12 @@ export default function Home() {
         const visibilityChangeCallback = async () => {
             if (document.hidden) {
                 const deleteUrl = `api/session_delete/${sessionId}`;
-                console.log(`🤖 fetch: `, deleteUrl);
-                await fetch(deleteUrl, { method: "DELETE" });
+                // console.log(`🤖 fetch: `, deleteUrl);
+                // await fetch(deleteUrl, { method: "POST" });
 
-                // const postUrl = `api/session_pause/${sessionId}`;
-                // console.log(`🤖 navigator.sendBeacon: `, postUrl);
-                // await navigator.sendBeacon(postUrl);
+                const postUrl = `api/session_pause/${sessionId}`;
+                console.log(`🤖 navigator.sendBeacon: `, postUrl);
+                await navigator.sendBeacon(postUrl);
             } else {
                 console.log(`🤖 welcome back`);
             }
@@ -39,6 +40,7 @@ export default function Home() {
         document.addEventListener("visibilitychange", visibilityChangeCallback);
 
         const blurCallback = async () => {
+            console.log(`🤖 blur`);
             const blurUrl = `api/session_blur/${sessionId}`;
             // await fetch(blurUrl, { method: "POST" });
             await navigator.sendBeacon(blurUrl);
@@ -50,14 +52,28 @@ export default function Home() {
             // await fetch(freezeUrl, { method: "POST" });
             await navigator.sendBeacon(freezeUrl);
         };
-        window.addEventListener("freeze", blurCallback);
+        window.addEventListener("freeze", freezeCallback);
+
+        const pagehideCallback = async () => {
+            const pagehideUrl = `api/session_pagehide/${sessionId}`;
+            // await fetch(pagehideUrl, { method: "POST" });
+            await navigator.sendBeacon(pagehideUrl);
+        };
+        window.addEventListener("pagehide", pagehideCallback);
+
+        const beforeunloadCallback = async () => {
+            const beforeunloadUrl = `api/session_beforeunload/${sessionId}`;
+            // await fetch(beforeunloadUrl, { method: "POST" });
+            await navigator.sendBeacon(beforeunloadUrl);
+        };
+        window.addEventListener("beforeunload", beforeunloadCallback);
 
         const unloadCallback = async () => {
             const unloadUrl = `api/session_unload/${sessionId}`;
             // await fetch(unloadUrl, { method: "POST" });
             await navigator.sendBeacon(unloadUrl);
         };
-        window.addEventListener("unload", blurCallback);
+        window.addEventListener("unload", unloadCallback);
 
         return () => {
             document.removeEventListener(
@@ -65,8 +81,10 @@ export default function Home() {
                 visibilityChangeCallback,
             );
             window.removeEventListener("blur", blurCallback);
-            window.removeEventListener("freeze", blurCallback);
-            window.removeEventListener("unload", blurCallback);
+            window.removeEventListener("freeze", freezeCallback);
+            window.removeEventListener("pagehide", pagehideCallback);
+            window.removeEventListener("beforeunload", beforeunloadCallback);
+            window.removeEventListener("unload", unloadCallback);
         };
     }, [sessionId]);
 
@@ -74,6 +92,7 @@ export default function Home() {
         <main className={styles.main}>
             <div className={styles.description}>
                 {sessionId}
+                <Link href={"/testing"}>Test</Link>
                 <p>
                     Get started by editing&nbsp;
                     <code className={styles.code}>src/app/page.tsx</code>
@@ -112,7 +131,7 @@ export default function Home() {
                 <a
                     href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
                     className={styles.card}
-                    target="_blank"
+                    // target="_blank"
                     rel="noopener noreferrer"
                 >
                     <h2>
