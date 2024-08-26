@@ -11,7 +11,7 @@ export default function Home() {
 
     useEffect(() => {
         const fetchCreate = async () => {
-            console.log(`🤖 useEffect`);
+            console.log(`🤖useEffect`);
             const response = await fetch("api/session_create", {
                 method: "POST",
             });
@@ -23,7 +23,7 @@ export default function Home() {
         fetchCreate();
 
         const registerServiceWorker = async () => {
-            if ("serviceWorker" in navigator) {
+            if (navigator.serviceWorker) {
                 try {
                     const registration =
                         await navigator.serviceWorker.register(
@@ -36,6 +36,33 @@ export default function Home() {
                     } else if (registration.active) {
                         console.log("🤖Service worker active");
                     }
+
+                    const messageChannel = new MessageChannel();
+                    const activatedRegistration =
+                        await navigator.serviceWorker.ready;
+
+                    messageChannel.port1.onmessage = (event) => {
+                        if (event.data.type === "HEART_BEAT") {
+                            console.log(
+                                `🤖 heat beat checking`,
+                                activatedRegistration.active,
+                            );
+                            activatedRegistration.active?.postMessage({
+                                type: "HEART_BEAT_ACK",
+                                message: "🤖not dead yet",
+                            });
+                        } else {
+                            console.log(
+                                `🤖The service worker sent me a message: `,
+                                event.data,
+                            );
+                        }
+                    };
+
+                    activatedRegistration.active?.postMessage(
+                        { type: "INIT_PORT" },
+                        [messageChannel.port2],
+                    );
                 } catch (error) {
                     console.error(`Registration failed with ${error}`);
                 }
