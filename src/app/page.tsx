@@ -21,6 +21,28 @@ export default function Home() {
         };
 
         fetchCreate();
+
+        const registerServiceWorker = async () => {
+            if ("serviceWorker" in navigator) {
+                try {
+                    const registration =
+                        await navigator.serviceWorker.register(
+                            "/service-worker.js",
+                        );
+                    if (registration.installing) {
+                        console.log("🤖Service worker installing");
+                    } else if (registration.waiting) {
+                        console.log("🤖Service worker installed");
+                    } else if (registration.active) {
+                        console.log("🤖Service worker active");
+                    }
+                } catch (error) {
+                    console.error(`Registration failed with ${error}`);
+                }
+            }
+        };
+
+        registerServiceWorker();
     }, []);
 
     useEffect(() => {
@@ -31,16 +53,16 @@ export default function Home() {
                 // await fetch(deleteUrl, { method: "POST" });
 
                 const postUrl = `api/session_pause/${sessionId}`;
-                console.log(`🤖 navigator.sendBeacon: `, postUrl);
+                // console.log(`🤖 navigator.sendBeacon: `, postUrl);
                 await navigator.sendBeacon(postUrl);
             } else {
-                console.log(`🤖 welcome back`);
+                // console.log(`🤖 welcome back`);
             }
         };
         document.addEventListener("visibilitychange", visibilityChangeCallback);
 
         const blurCallback = async () => {
-            console.log(`🤖 blur`);
+            // console.log(`🤖 blur`);
             const blurUrl = `api/session_blur/${sessionId}`;
             // await fetch(blurUrl, { method: "POST" });
             await navigator.sendBeacon(blurUrl);
