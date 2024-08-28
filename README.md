@@ -22,6 +22,8 @@ This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-opti
 
 ## Experiment Result
 
+### Event Base Approach
+
 -   record the API call received by BE
 -   order of event no stable
 
@@ -39,3 +41,33 @@ This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-opti
 | Close Window (while Acative) | "visibilitychange"<br>"beforeunload"<br>"pagehide"<br>"unload"<br>"blur" | "beforeunload"<br>"blur"<br>"unload" | "beforeunload"<br>"pagehide"<br>"unload" | -- close the only tab --<br>"visibilitychange"<br>"blur"<br>"pagehide"<br>"unload" |
 | Quit App (while Acative)     | "visibilitychange"<br>"beforeunload"<br>"pagehide"<br>"unload"           | "beforeunload"                       | "beforeunload"                           | no event                                                                           |
 | Discard (mannually)          | no event                                                                 | N/A                                  | N/A                                      | N/A                                                                                |
+
+### Service Worker Approach
+
+-   heart beat methodology
+    -   SW check page live each 1000ms
+    -   send signal to BE if no feedback at 900ms
+-   Mobile browser require SSL in order to register service worker
+    -   even self-sign certificate can't work
+
+| Browser           | Mac OS Chrome | Mac OS Firefox | Mac OS Safari | Android Chrome |
+| ----------------- | ------------- | -------------- | ------------- | -------------- |
+| Close Tab         | Yes           | Yes            | Yes           | N/A            |
+| Close Window      | Yes           | Yes            | Yes           | N/A            |
+| Close Last Window | No            | Yes            | Yes           | N/A            |
+| Quit App          | No            | No             | No            | N/A            |
+
+-   service worker would not die immediately when
+    -   page is closed
+    -   window is closed
+    -   page is discarded
+-   BE cannot receive active "session end" message when
+    -   all windows are closed (chrome)
+    -   quit app
+-   Only certain feature support in background
+    -   push notification
+    -   background sync
+    -   periodic background sync
+        -   most likely to fit in this task, but experimental and only chrome
+-   on Mobile, service worker need HTTPS to work
+    -   even self sign certificate cant work
